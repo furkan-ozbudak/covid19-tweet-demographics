@@ -1,0 +1,23 @@
+cd $KAFKA_HOME
+
+kafka-server-start.sh ./config/server.properties
+
+jps
+
+spark-submit --master yarn '/home/cloudera/Desktop/SparkProducer-0.0.1-SNAPSHOT-jar-with-dependencies.jar'
+
+spark-submit --master yarn '/home/cloudera/Desktop/SparkStreaming-0.0.1-SNAPSHOT-jar-with-dependencies.jar'
+
+Note: Show output directory during full demo.
+
+hadoop fs -cat 1-spark-streaming-output/*/*
+
+import org.apache.hadoop.fs.{FileSystem, Path}
+val fs = FileSystem.get(sc.hadoopConfiguration)
+val outPutPath = new Path("hdfs://quickstart.cloudera:8020/user/cloudera/1-spark-sql-input")
+if (fs.exists(outPutPath))
+  fs.delete(outPutPath, true)
+sc.textFile("hdfs://localhost:8020/user/cloudera/1-spark-streaming-output/*/*").coalesce(1).saveAsTextFile("hdfs://quickstart.cloudera:8020/user/cloudera/1-spark-sql-input")
+
+spark-submit --master yarn '/home/cloudera/Desktop/SparkSQL-0.0.1-SNAPSHOT-jar-with-dependencies.jar'
+
